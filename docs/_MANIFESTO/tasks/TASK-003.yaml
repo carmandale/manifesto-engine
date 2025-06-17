@@ -1,0 +1,8 @@
+id: TASK-003
+title: Vision alignment system
+description: |
+  Every task/epic must link to vision
+  Supervisor checks alignment before execution
+acceptance:
+  vision_field_required: true
+  supervisor_prompt_includes_vision: true

@@ -1,0 +1,11 @@
+id: TASK-002
+title: Speed-of-thought task creation
+description: |
+  Create 'manifesto add' command that:
+  - Accepts free-form text
+  - Parses into structured task
+  - Links to active epic
+  - < 30 seconds end-to-end
+acceptance:
+  command_exists: manifesto add --help
+  time_to_create: < 30 seconds

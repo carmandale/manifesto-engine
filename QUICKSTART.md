@@ -10,6 +10,14 @@ Zero-ambiguity project orchestration in 15 minutes.
 5. [Verification & Proof](#verification--proof)
 6. [Advanced Workflows](#advanced-workflows)
 
+## Plan → Execute Pattern
+
+NEVER skip planning. ALWAYS:
+1. Run `manifesto plan` – Agent outputs PLAN only
+2. Review `docs/_MANIFESTO/plan.json`
+3. Approve by typing `manifesto execute`
+4. Agent executes tasks in order – stops on first failure
+
 ## Installation
 
 ### Prerequisites

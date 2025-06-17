@@ -1,0 +1,90 @@
+# AUTO-GENERATED MANIFESTO TEMPLATE - DO NOT EDIT HEADER
+# Generated: {{ date }}
+# Engine Version: 0.2.0
+#
+# ╭─────────────────────────── CORE DIRECTIVES ────────────────────────────╮
+# │ Radical Clarity • Delete every word or line that is not strictly       │
+# │ functional. Maximum eight tasks. Every bullet ≤ 12 words.              │
+# │ PLAN → EXECUTE • Agent MUST output PLAN phase only on first run.       │
+# │ Human must type "EXECUTE" to continue. No action before approval.      │
+# │ Binary Success • success = all true, stop on first failure.            │
+# ╰─────────────────────────────────────────────────────────────────────────╯
+
+prd_id: "{{ project_id }}"
+title: "{{ title }}"
+status: "Draft"
+owner: "AI Orchestrator"
+stakeholders: ["Product", "Engineering", "Design"]
+created: "{{ date }}"
+
+roles:
+  supervisor:
+    name: "O3-High Right-Hand"
+    authority: "Absolute within scope"
+    description: "Senior staff engineer & editor-in-chief"
+  worker:
+    name: "DEV-AGENT"
+    authority: "Execute tasks within PLAN"
+    description: "Confident, decisive implementer"
+
+workflow:
+  phases:
+    - PLAN   # Agent outputs structured plan only
+    - EXECUTE  # Runs only after human approval
+  rules:
+    - "BEGIN with STEP 1 – PLAN only"
+    - "Human types EXECUTE to proceed"
+    - "Stop on first failure"
+    - "No extra commentary"
+
+tech_stack:{% if project_type == 'visionos' %}
+  - swift
+  - visionos
+  - realitykit
+  - arkit{% else %}
+  - {{ project_type }}{% endif %}
+
+metrics:
+  north_star: "User engagement rate"
+  guardrails:
+    - name: "Load time"
+      target: "< 2s"
+    - name: "Crash-free sessions"
+      target: "> 99.8%"{% if project_type == 'visionos' %}
+    - name: "Frame rate"
+      target: ">= 90 fps"{% endif %}
+
+dependencies:
+  - "Git"
+  - "Manifesto Engine >= 0.2.0"{% if project_type == 'visionos' %}
+  - "visionOS SDK >= 2.0"
+  - "Xcode >= 15.0"
+  - "Reality Composer Pro"{% endif %}
+
+# TASKS – MAX 8. Description ≤ 12 words. Single numeric acceptance per task.
+# Use TASK-000 format.
+
+tasks:
+  - id: "TASK-001"
+    description: "Initialize project structure"
+    owner_role: "DEV-AGENT"
+    depends_on: []
+    acceptance:
+      file_exists:
+        - {% if project_type == 'visionos' %}"Package.swift"{% else %}"src/main.py"{% endif %}
+
+  - id: "TASK-002"
+    description: "Create entry point"
+    owner_role: "DEV-AGENT"
+    depends_on: ["TASK-001"]
+    acceptance:
+      command_succeeds:
+        - {% if project_type == 'visionos' %}"swift build"{% else %}"python -m py_compile src/main.py"{% endif %}
+
+  - id: "TASK-003"
+    description: "Set up core scene"
+    owner_role: "DEV-AGENT"
+    depends_on: ["TASK-002"]
+    acceptance:
+      file_contains:
+        {% if project_type == 'visionos' %}"Sources/{{ title }}/ImmersiveView.swift": "RealityView"{% else %}"src/main.py": "if __name__ == '__main__'"{% endif %} 

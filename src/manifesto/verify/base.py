@@ -4,19 +4,26 @@ import subprocess
 import hashlib
 import json
 from datetime import datetime
-from typing import Dict, Tuple, Any, List
+from typing import Dict, Tuple, Any, List, Optional
 
-from datetime import datetime
+from ..core.task_loader import load_tasks
 
 class BaseVerifier(ABC):
-    def __init__(self, manifest: dict):
+    def __init__(self, manifest: dict, manifest_dir: Optional[str] = None):
         self.manifest = manifest
+        self.manifest_dir = manifest_dir
         
     def verify_task(self, task_id: str) -> Tuple[bool, Dict[str, Any]]:
         """Verify a specific task"""
+        # Load tasks from directory or manifest
+        if self.manifest_dir:
+            tasks = load_tasks(self.manifest_dir)
+        else:
+            tasks = self.manifest.get('tasks', [])
+        
         # Find task
         task = None
-        for t in self.manifest.get('tasks', []):
+        for t in tasks:
             if t['id'] == task_id:
                 task = t
                 break
@@ -97,7 +104,12 @@ class BaseVerifier(ABC):
         }
         
         # Hash relevant files
-        for t in self.manifest.get('tasks', []):
+        if self.manifest_dir:
+            tasks = load_tasks(self.manifest_dir)
+        else:
+            tasks = self.manifest.get('tasks', [])
+            
+        for t in tasks:
             if t['id'] == task_id:
                 for f in t.get('acceptance', {}).get('file_exists', []):
                     if Path(f).exists():

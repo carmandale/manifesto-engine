@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source:*)",
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(./manifesto verify TASK-999)",
+      "Bash(./manifesto verify TASK-001)",
+      "Bash(./manifesto status)",
+      "Bash(./manifesto migrate-tasks:*)"
+    ],
+    "deny": []
+  }
+}

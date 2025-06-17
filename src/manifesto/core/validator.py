@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from typing import List, Dict, Optional, Literal, Any
 from datetime import datetime
+from pathlib import Path
+from .task_loader import load_tasks
 
 class AcceptanceCriteria(BaseModel):
     file_exists: Optional[List[str]] = None
@@ -32,12 +34,30 @@ class ManifestoSchema(BaseModel):
     owner: str
     tech_stack: List[str]
     metrics: Metrics
-    tasks: List[Task]
+    tasks: Optional[List[Task]] = None  # Made optional for task directory support
     
-def validate_manifesto(data: dict) -> bool:
-    """Validate manifesto against schema"""
+def _enforce_radical_constraints(data: dict, manifest_dir: Optional[str] = None):
+    """Raise ValidationError if radical constraints violated."""
+    # Load tasks from directory or manifest
+    if manifest_dir:
+        tasks = load_tasks(manifest_dir)
+    else:
+        tasks = data.get("tasks", [])
+    
+    if len(tasks) > 8:
+        raise ValidationError([{"loc": ("tasks",), "msg": "More than 8 tasks defined", "type": "value_error"}])
+
+    for t in tasks:
+        desc_words = t.get("description", "").strip().split()
+        if len(desc_words) > 12:
+            raise ValidationError([{"loc": ("tasks", t.get("id", "?"), "description"), "msg": "Description exceeds 12 words", "type": "value_error"}])
+
+
+def validate_manifesto(data: dict, manifest_dir: Optional[str] = None) -> bool:
+    """Validate manifesto against schema and radical constraints."""
     try:
-        ManifestoSchema(**data)
+        ManifestoSchema(**data)  # base schema validation
+        _enforce_radical_constraints(data, manifest_dir)  # additional constraints
         return True
     except Exception as e:
         print(f"Validation error: {e}")

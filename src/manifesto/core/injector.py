@@ -11,12 +11,16 @@ def inject_manifesto(project_path: Path, project_name: str, project_type: str) -
         manifesto_dir = project_path / "docs" / "_MANIFESTO"
         manifesto_dir.mkdir(parents=True, exist_ok=True)
         
-        # Get template path
+        # Determine template path and load content
         template_dir = Path(__file__).parent.parent / "templates"
-        template_dir.mkdir(exist_ok=True)
-        
-        # Read or create template
-        template_content = get_template_content()
+        template_dir.mkdir(parents=True, exist_ok=True)
+        custom_template_path = template_dir / "manifesto.yaml.j2"
+
+        if custom_template_path.exists():
+            template_content = custom_template_path.read_text()
+        else:
+            # Fallback to legacy built-in template
+            template_content = get_template_content()
         
         # Create Jinja2 template
         from jinja2 import Template

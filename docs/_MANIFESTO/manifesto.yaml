@@ -1,0 +1,63 @@
+# AUTO-GENERATED MANIFESTO TEMPLATE - DO NOT EDIT HEADER
+# Generated: 2025-06-17
+# Engine Version: 0.2.0
+#
+# ╭─────────────────────────── CORE DIRECTIVES ────────────────────────────╮
+# │ Radical Clarity • Delete every word or line that is not strictly       │
+# │ functional. Maximum eight tasks. Every bullet ≤ 12 words.              │
+# │ PLAN → EXECUTE • Agent MUST output PLAN phase only on first run.       │
+# │ Human must type "EXECUTE" to continue. No action before approval.      │
+# │ Binary Success • success = all true, stop on first failure.            │
+# ╰─────────────────────────────────────────────────────────────────────────╯
+
+# MANIFESTO ENGINE 2.0 - VISION-ALIGNED ORCHESTRATION
+
+prd_id: PRD-2025-MAN-ENG
+title: Manifesto Engine - Speed of Thought Orchestration
+status: Draft
+owner: Dale Carman
+vision: Creative at the speed of thought - from vision to verified execution
+problem_statement: "AI agents forget the mission and veer off course. They claim tasks\
+  \ are done \nwhen they aren't. There's no persistent alignment between vision and\
+  \ execution.\n\nWe need a system that:\n1. Captures vision quickly (speed of thought)\n\
+  2. Breaks it into atomic, verifiable tasks\n3. Keeps agents aligned to the original\
+  \ vision\n4. Catches drift before it happens\n"
+metrics:
+  north_star: Time from idea to verified implementation
+  guardrails:
+  - name: Task creation time
+    target: < 30 seconds
+    measurement: Time to add new task via CLI
+  - name: Vision drift
+    target: 0%
+    measurement: Tasks rejected by supervisor for being off-mission
+  - name: False completion rate
+    target: 0%
+    measurement: Tasks that pass verification but don't meet intent
+core_innovations:
+  1_persistent_vision:
+    description: Vision statement that ALL agents read before EVERY task
+    implementation: Vision embedded in every prompt, verified by supervisor
+  2_task_hierarchy:
+    description: Vision → Epics → Tasks → Atomic Steps
+    implementation: 'vision.md          # Your high-level vision
+
+      ├── EPIC-001/      # Major features
+
+      │   ├── README.md  # Epic''s purpose & success criteria
+
+      │   ├── TASK-001.yaml
+
+      │   └── TASK-002.yaml
+
+      '
+  3_speed_of_thought_cli:
+    description: Add tasks as fast as you can think
+    commands:
+    - manifesto add 'Fix all build errors' --epic BUILD
+    - manifesto brain-dump fix-build-errors.md --parse
+    - manifesto dictate --epic VISION-PRO
+workflow_pattern: "1. VISIONARY (you) → shares vision/problem\n2. ARCHITECT (Claude/O3)\
+  \ → creates plan, breaks into epics\n3. SUPERVISOR → monitors alignment, prevents\
+  \ drift  \n4. WORKERS (Claude Code) → execute atomic tasks\n5. VERIFIER → cryptographic\
+  \ proof of completion\n"
