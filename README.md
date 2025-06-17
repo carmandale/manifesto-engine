@@ -68,3 +68,9 @@ class MyLangVerifier(BaseVerifier):
         # Implement language-specific test runner
         pass
 ```
+
+## Documentation
+
+- 📚 **[Quick Start Guide](QUICKSTART.md)** - Get running in 15 minutes
+- 🤖 **[AI Agent Instructions](docs/AI_AGENTS.md)** - For Claude Code
+- 🔧 **[API Reference](docs/API.md)** - Detailed command reference
