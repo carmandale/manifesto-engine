@@ -1,0 +1,24 @@
+prd_id: "PRD-2025-EX-001"
+title: "Example Project"
+status: "Draft"
+owner: "Test Owner"
+tech_stack:
+  - python
+  - fastapi
+
+metrics:
+  north_star: "API response time"
+  guardrails:
+    - name: "Response time"
+      target: "< 100ms"
+      measurement: "95th percentile"
+
+tasks:
+  - id: "TASK-001"
+    description: "Initialize project structure"
+    owner_role: "DEV-AGENT"
+    depends_on: []
+    acceptance:
+      file_exists:
+        - "src/main.py"
+        - "requirements.txt"
