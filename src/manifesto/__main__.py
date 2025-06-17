@@ -11,6 +11,9 @@ from rich.table import Table
 from .core.injector import inject_manifesto
 from .core.validator import validate_manifesto
 from .core.task_loader import load_tasks
+from .core.task_parser import TaskParser
+from .core.prompt_generator import PromptGenerator
+from .core.markdown_parser import MarkdownImporter
 from .verify.swift import SwiftVerifier
 from .orchestrate.planner import ManifestoPlanner
 
@@ -218,6 +221,188 @@ def migrate_tasks(manifest, dry_run):
     console.print(f"   - Migrated {len(tasks)} tasks to {tasks_dir}")
     console.print(f"   - Updated {manifest_path}")
     console.print(f"   - Backup saved to {backup_path}")
+
+@cli.command()
+@click.argument('description', nargs=-1, required=True)
+@click.option('--manifest-dir', default='docs/_MANIFESTO', help='Manifesto directory')
+def add(description, manifest_dir):
+    """Add a new task using natural language description."""
+    # Join the description words
+    description_text = ' '.join(description)
+    
+    # Create parser and parse
+    parser = TaskParser(manifest_dir)
+    task_id = parser.create_task(description_text)
+    
+    if task_id:
+        console.print(f"\n[bold green]🚀 Task {task_id} created successfully![/bold green]")
+        console.print(f"Run 'manifesto verify {task_id}' to test it")
+    else:
+        console.print("[red]Task creation cancelled[/red]")
+
+@cli.command('check-alignment')
+@click.option('--manifest-dir', default='docs/_MANIFESTO', help='Manifesto directory')
+@click.option('--output', type=click.Choice(['table', 'detailed']), default='table', help='Output format')
+def check_alignment(manifest_dir, output):
+    """Check all tasks for vision alignment and flag drift."""
+    manifest_path = Path(manifest_dir)
+    
+    # Load vision
+    manifest_file = manifest_path / "manifesto.yaml"
+    if not manifest_file.exists():
+        console.print("[red]No manifesto found[/red]")
+        sys.exit(1)
+        
+    with open(manifest_file) as f:
+        manifest_data = yaml.safe_load(f)
+    
+    vision = manifest_data.get('vision', 'No vision found')
+    north_star = manifest_data.get('metrics', {}).get('north_star', 'No north star metric')
+    
+    # Load all tasks
+    tasks = load_tasks(manifest_dir)
+    
+    if not tasks:
+        console.print("[yellow]No tasks found[/yellow]")
+        return
+    
+    # Analyze each task
+    alignment_scores = []
+    
+    for task in tasks:
+        score = _calculate_alignment_score(task, vision)
+        alignment_scores.append({
+            'task': task,
+            'score': score['score'],
+            'status': score['status'],
+            'issues': score['issues']
+        })
+    
+    # Display results
+    if output == 'table':
+        table = Table(title="Vision Alignment Report")
+        table.add_column("Task ID", style="cyan")
+        table.add_column("Title", style="white") 
+        table.add_column("Score", style="bold")
+        table.add_column("Status", style="bold")
+        table.add_column("Issues", style="yellow")
+        
+        for item in alignment_scores:
+            task = item['task']
+            score_color = "green" if item['score'] >= 4 else "yellow" if item['score'] >= 3 else "red"
+            status_color = "green" if item['status'] == "ALIGNED" else "yellow" if item['status'] == "NEEDS_REVIEW" else "red"
+            
+            table.add_row(
+                task['id'],
+                task.get('title', task.get('description', '')[:40]),
+                f"[{score_color}]{item['score']}/5[/{score_color}]",
+                f"[{status_color}]{item['status']}[/{status_color}]",
+                ', '.join(item['issues']) if item['issues'] else "✓"
+            )
+        
+        console.print(table)
+        
+        # Summary
+        avg_score = sum(item['score'] for item in alignment_scores) / len(alignment_scores)
+        drift_count = sum(1 for item in alignment_scores if item['score'] < 3)
+        
+        console.print(f"\n[bold]Summary:[/bold]")
+        console.print(f"Average alignment score: {avg_score:.1f}/5")
+        console.print(f"Tasks with potential drift: {drift_count}/{len(tasks)}")
+        
+    else:  # detailed output
+        for item in alignment_scores:
+            task = item['task']
+            console.print(f"\n[bold cyan]Task {task['id']}:[/bold cyan] {task.get('title', '')}")
+            console.print(f"Vision Link: {task.get('vision_link', '[red]MISSING[/red]')}")
+            console.print(f"Alignment Score: {item['score']}/5")
+            console.print(f"Status: {item['status']}")
+            if item['issues']:
+                console.print(f"Issues: {', '.join(item['issues'])}")
+            console.print("-" * 40)
+
+def _calculate_alignment_score(task: dict, vision: str) -> dict:
+    """Calculate vision alignment score for a task."""
+    score = 5  # Start with perfect score
+    issues = []
+    
+    # Check for vision_link field
+    vision_link = task.get('vision_link', '')
+    if not vision_link:
+        score -= 2
+        issues.append("Missing vision_link")
+    else:
+        # Check quality of vision link
+        if len(vision_link) < 30:
+            score -= 1
+            issues.append("Vision link too brief")
+        
+        vague_terms = ['helps', 'supports', 'improves', 'better']
+        if any(term in vision_link.lower() for term in vague_terms) and len(vision_link) < 50:
+            score -= 1
+            issues.append("Vision link is vague")
+    
+    # Check if description mentions vision keywords
+    description = task.get('description', '').lower()
+    vision_keywords = ['speed', 'thought', 'ambiguity', 'verify', 'align']
+    has_vision_reference = any(keyword in description for keyword in vision_keywords)
+    
+    if not has_vision_reference and score > 3:
+        score -= 0.5
+        issues.append("No vision keywords in description")
+    
+    # Determine status
+    if score >= 4:
+        status = "ALIGNED"
+    elif score >= 3:
+        status = "NEEDS_REVIEW"
+    else:
+        status = "DRIFT_RISK"
+    
+    return {
+        'score': max(1, min(5, score)),  # Clamp between 1-5
+        'status': status,
+        'issues': issues
+    }
+
+@cli.command('generate-prompt')
+@click.argument('task_id')
+@click.option('--type', 'prompt_type', type=click.Choice(['worker', 'supervisor']), required=True, help='Type of prompt to generate')
+@click.option('--output', type=click.Choice(['console', 'file']), default='console', help='Output destination')
+@click.option('--manifest-dir', default='docs/_MANIFESTO', help='Manifesto directory')
+@click.option('--summary', help='Worker summary for supervisor prompts')
+def generate_prompt(task_id, prompt_type, output, manifest_dir, summary):
+    """Generate a prompt from templates for a specific task."""
+    generator = PromptGenerator(manifest_dir)
+    
+    # Generate the prompt
+    if prompt_type == 'worker':
+        prompt = generator.generate_worker_prompt(task_id)
+    else:  # supervisor
+        prompt = generator.generate_supervisor_prompt(task_id, summary)
+    
+    if not prompt:
+        console.print(f"[red]Task {task_id} not found[/red]")
+        sys.exit(1)
+    
+    # Output the prompt
+    if output == 'console':
+        console.print(prompt)
+    else:  # file
+        output_file = Path(f"{task_id}_{prompt_type}_prompt.md")
+        with open(output_file, 'w') as f:
+            f.write(prompt)
+        console.print(f"[green]✅ Prompt saved to {output_file}[/green]")
+
+@cli.command('import')
+@click.argument('file_path', type=click.Path(exists=True))
+@click.option('--interactive/--no-interactive', default=True, help='Interactive clarification mode')
+@click.option('--dry-run', is_flag=True, help='Preview without creating files')
+@click.option('--manifest-dir', default='docs/_MANIFESTO', help='Manifesto directory')
+def import_markdown(file_path, interactive, dry_run, manifest_dir):
+    """Import tasks from a markdown brain dump file."""
+    importer = MarkdownImporter(manifest_dir)
+    importer.import_file(file_path, interactive=interactive, dry_run=dry_run)
 
 if __name__ == "__main__":
     cli()

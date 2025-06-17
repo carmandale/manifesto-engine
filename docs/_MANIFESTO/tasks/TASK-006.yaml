@@ -1,0 +1,9 @@
+id: TASK-006
+title: First run clean build to capture all errors group by freq...
+description: First run clean build to capture all errors Group by frequency and fix
+  top 5 Scene01InteriorPrefab probably missing from manifest Component errors need
+  stubs
+owner_role: DEV-AGENT
+depends_on: []
+vision_link: Extracted from brain dump to support Fix Honda Build Errors
+acceptance: {}

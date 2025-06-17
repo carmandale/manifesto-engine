@@ -8,14 +8,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Core Philosophy**: Radical clarity - every task must have measurable acceptance criteria with no room for interpretation.
 
-## Critical Workflow Pattern: PLAN → EXECUTE
+## Critical Workflow Pattern: PLAN → EXECUTE → SUMMARIZE → SUPERVISE
 
-**ALWAYS follow this two-phase approach:**
-1. Generate a PLAN first
-2. Wait for human approval (user types "EXECUTE")
-3. Only then proceed with implementation
+**ALWAYS follow this four-phase workflow:**
 
-Never skip the planning phase or execute without approval.
+1. **PLAN Phase**: Generate a numbered plan and STOP
+2. **EXECUTE Phase**: After receiving "EXECUTE", implement exactly as planned
+3. **SUMMARIZE Phase**: Document actions with proof and STOP
+4. **SUPERVISE Phase**: Wait for supervisor review
+
+**Templates Available:**
+- `src/manifesto/templates/worker_prompt.md` - For task execution
+- `src/manifesto/templates/supervisor_review.md` - For review process
+- `src/manifesto/templates/workflow_example.md` - Complete example
+
+See `docs/WORKFLOW.md` for detailed workflow documentation.
 
 ## Development Commands
 

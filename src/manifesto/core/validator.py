@@ -15,6 +15,7 @@ class Task(BaseModel):
     id: str = Field(pattern=r"^TASK-\d{3}$")
     description: str = Field(max_length=120)
     owner_role: str
+    vision_link: str = Field(description="How this task supports the main vision")
     depends_on: List[str] = []
     acceptance: AcceptanceCriteria
 

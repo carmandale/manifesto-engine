@@ -5,6 +5,7 @@ description: |
   - manifesto.yaml (PRD + vision)
   - tasks/TASK-XXX.yaml (individual tasks)
   - epics/EPIC-XXX/README.md (epic vision)
+vision_link: Enables speed of thought by allowing rapid task creation without editing large files, supporting modular and parallel development
 acceptance:
   migration_complete: All existing tasks in separate files
   backward_compatible: Old format still loads

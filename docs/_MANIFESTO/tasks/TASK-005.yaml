@@ -1,0 +1,15 @@
+id: TASK-005
+title: Fix Honda build errors
+description: |-
+  Systematically fix all build errors by:
+  1. Capturing complete error surface
+  2. Fixing top-5 most frequent symbols
+  3. Repeat until zero errors
+owner_role: DEV-AGENT
+depends_on: []
+vision_link: Removes build errors blocking Honda project development, supporting 'speed of thought' by eliminating compile-time delays
+acceptance:
+  performance_metric:
+    error_count: 0
+  command_succeeds:
+  - xcodebuild -project honda/honda.xcodeproj -scheme honda 2>&1 | tee build.log

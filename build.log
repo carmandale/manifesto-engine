@@ -1,0 +1,5 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -project honda/honda.xcodeproj -scheme honda
+
+2025-06-17 14:03:23.862 xcodebuild[89618:45196719] Writing error result bundle to /var/folders/2j/3tf17x5d7pj10gdjbp1ydpf40000gn/T/ResultBundle_2025-17-06_14-03-0023.xcresult
+xcodebuild: error: 'honda/honda.xcodeproj' does not exist.

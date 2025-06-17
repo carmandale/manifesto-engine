@@ -1,0 +1,14 @@
+id: "TASK-004"
+title: "Fix Honda build errors"
+description: |
+  Systematically fix all build errors by:
+  1. Capturing complete error surface
+  2. Fixing top-5 most frequent symbols
+  3. Repeat until zero errors
+owner_role: "DEV-AGENT"
+depends_on: []
+vision_link: "Removes build errors that block development flow, enabling 'speed of thought' by eliminating compile-time friction"
+acceptance:
+  error_count: 0
+  command_succeeds:
+    - "xcodebuild -project honda/honda.xcodeproj -scheme honda"

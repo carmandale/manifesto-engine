@@ -3,6 +3,7 @@ title: Vision alignment system
 description: |
   Every task/epic must link to vision
   Supervisor checks alignment before execution
+vision_link: Prevents mission drift by ensuring every task explicitly connects to vision, maintaining focus on 'speed of thought' and preventing wasted effort
 acceptance:
   vision_field_required: true
   supervisor_prompt_includes_vision: true
