@@ -1,6 +1,16 @@
 #!/bin/bash
 # MANIFESTO ENGINE BOOTSTRAP v2.0 - with uv
 # Copy this entire file to Claude Code and run: bash bootstrap-manifesto.sh
+#
+# This script creates a new manifesto-engine installation.
+# Usage:
+#   1. Clone this repo: git clone https://github.com/carmandale/manifesto-engine.git
+#   2. Or run standalone: curl -sSL https://raw.githubusercontent.com/carmandale/manifesto-engine/main/bootstrap-manifesto.sh | bash
+#
+# Requirements:
+#   - uv (install from: https://astral.sh/uv)
+#   - git
+#   - Python 3.11+
 
 set -e  # Exit on error
 
